@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - SecureHealth{% endblock %}
+
+{% block content %}
+<!-- Hero Banner -->
+<div class="hero-section mb-4 text-center">
+    <h2 class="fw-bold mb-2"><i class="fas fa-user-md me-2"></i>Welcome, {{ user.name }}!</h2>
+    <p class="lead">{{ 'Your doctor dashboard' if user.role == 'doctor' else 'Your patient dashboard' }}</p>
+</div>
+
+{% if user.role == 'doctor' %}
+<!-- Doctor Quick Stats -->
+<div class="row mb-4 text-center">
+    <div class="col-md-4 mb-2">
+        <div class="card border-success h-100">
+            <div class="card-body">
+                <i class="fas fa-calendar fa-2x text-success mb-2"></i>
+                <h6 class="fw-bold">Total Appointments</h6>
+                <div class="fs-4">{{ recent_appointments|length + cancelled_appointments|length }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-2">
+        <div class="card border-primary h-100">
+            <div class="card-body">
+                <i class="fas fa-calendar-check fa-2x text-primary mb-2"></i>
+                <h6 class="fw-bold">Upcoming/Recent</h6>
+                <div class="fs-4">{{ recent_appointments|length }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-2">
+        <div class="card border-danger h-100">
+            <div class="card-body">
+                <i class="fas fa-calendar-times fa-2x text-danger mb-2"></i>
+                <h6 class="fw-bold">Cancelled/Rejected</h6>
+                <div class="fs-4">{{ cancelled_appointments|length }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Doctor Appointments Sections -->
+<div class="row mb-4">
+    <div class="col-md-6 mb-3">
+        <div class="card h-100 border-primary">
+            <div class="card-header bg-primary text-white">
+                <i class="fas fa-calendar-check me-2"></i>Recent Bookings
+            </div>
+            <div class="card-body p-2">
+                {% if recent_appointments %}
+                <ul class="list-group list-group-flush">
+                    {% for appt in recent_appointments %}
+                    <li class="list-group-item d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                        <div>
+                            <span class="fw-bold">{{ appt.date.strftime('%Y-%m-%d') }} {{ appt.time.strftime('%H:%M') }}</span>
+                            <span class="badge bg-success ms-2">{{ appt.status.title() }}</span><br>
+                            <span class="text-muted small">Patient: {{ appt.patient.name }}</span>
+                        </div>
+                        <div class="mt-2 mt-md-0">
+                            <a href="{{ url_for('appointments') }}" class="btn btn-outline-primary btn-sm">Details</a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted">No recent bookings.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <div class="card h-100 border-danger">
+            <div class="card-header bg-danger text-white">
+                <i class="fas fa-calendar-times me-2"></i>Cancelled/Rejected Bookings
+            </div>
+            <div class="card-body p-2">
+                {% if cancelled_appointments %}
+                <ul class="list-group list-group-flush">
+                    {% for appt in cancelled_appointments %}
+                    <li class="list-group-item d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                        <div>
+                            <span class="fw-bold">{{ appt.date.strftime('%Y-%m-%d') }} {{ appt.time.strftime('%H:%M') }}</span>
+                            <span class="badge bg-danger ms-2">{{ appt.status.title() }}</span><br>
+                            <span class="text-muted small">Patient: {{ appt.patient.name }}</span>
+                            {% if appt.cancellation_remarks %}<br><span class="text-danger small">Remarks: {{ appt.cancellation_remarks }}</span>{% endif %}
+                        </div>
+                        <div class="mt-2 mt-md-0">
+                            <a href="{{ url_for('appointments') }}" class="btn btn-outline-danger btn-sm">Details</a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted">No cancelled or rejected bookings.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Appointment Files Section (Doctors Only) -->
+{% if user.role == 'doctor' and recent_appointment_files %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <i class="fas fa-file-medical me-2"></i>Recent Shared Files
+            </div>
+            <div class="card-body p-2">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>File</th>
+                                <th>Type</th>
+                                <th>Patient</th>
+                                <th>Appointment</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for file in recent_appointment_files %}
+                            <tr>
+                                <td>
+                                    <i class="fas fa-file me-1"></i>
+                                    {{ file.filename }}
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ file.file_type.replace('_', ' ').title() }}</span>
+                                </td>
+                                <td>{{ file.patient.name }}</td>
+                                <td>
+                                    {{ file.appointment.date.strftime('%Y-%m-%d') }} 
+                                    {{ file.appointment.time.strftime('%H:%M') }}
+                                </td>
+                                <td>{{ file.created_at.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    <a href="{{ url_for('appointment_files', appt_id=file.appointment_id) }}" 
+                                       class="btn btn-sm btn-outline-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endif %}
+
+<!-- Recent Appointment Files Section (Patients) -->
+{% if user.role == 'patient' and recent_appointment_files %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <i class="fas fa-file-medical me-2"></i>Recent Files from Doctors
+            </div>
+            <div class="card-body p-2">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>File</th>
+                                <th>Type</th>
+                                <th>Doctor</th>
+                                <th>Appointment</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for file in recent_appointment_files %}
+                            <tr>
+                                <td>
+                                    <i class="fas fa-file me-1"></i>
+                                    {{ file.filename }}
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ file.file_type.replace('_', ' ').title() }}</span>
+                                </td>
+                                <td>{{ file.doctor.name }}</td>
+                                <td>
+                                    {{ file.appointment.date.strftime('%Y-%m-%d') }} 
+                                    {{ file.appointment.time.strftime('%H:%M') }}
+                                </td>
+                                <td>{{ file.created_at.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    <a href="{{ url_for('appointment_files', appt_id=file.appointment_id) }}" 
+                                       class="btn btn-sm btn-outline-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row mb-4">
+    <!-- Profile Card -->
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-header bg-info text-white text-center">
+                <i class="fas fa-user-circle fa-2x mb-2"></i>
+                <h5 class="mb-0">Account Info</h5>
+            </div>
+            <div class="card-body text-start">
+                <div class="mb-2">
+                    <span class="fw-bold">Name:</span> {{ user.name }}
+                </div>
+                <div class="mb-2">
+                    <span class="fw-bold">Role:</span> {{ user.role.title() }}
+                </div>
+                <div class="mb-2">
+                    <span class="fw-bold">Email:</span> {{ user.email }}
+                </div>
+                {% if user.gender %}
+                <div class="mb-2">
+                    <span class="fw-bold">Gender:</span> {{ user.gender }}
+                </div>
+                {% endif %}
+                {% if user.age %}
+                <div class="mb-2">
+                    <span class="fw-bold">Age:</span> {{ user.age }}
+                </div>
+                {% endif %}
+                {% if user.address %}
+                <div class="mb-2">
+                    <span class="fw-bold">Address:</span> {{ user.address }}
+                </div>
+                {% endif %}
+                {% if user.contact_number %}
+                <div class="mb-2">
+                    <span class="fw-bold">Contact:</span> {{ user.contact_number }}
+                </div>
+                {% endif %}
+                {% if user.role == 'doctor' %}
+                <hr>
+                <h6 class="mb-2"><i class="fas fa-user-md me-2"></i>Doctor Profile</h6>
+                <div class="mb-2">
+                    <span class="fw-bold">Specialization:</span> {{ user.specialization or 'N/A' }}
+                </div>
+                <div class="mb-2">
+                    <span class="fw-bold">NMC Reg. No.:</span> {{ user.nmc_registration_number or 'N/A' }}
+                </div>
+                <div class="mb-2">
+                    <span class="fw-bold">Experience:</span> {{ user.years_experience or 'N/A' }} years
+                </div>
+                <div class="mb-2">
+                    <span class="fw-bold">Fee:</span> {{ user.consultation_fee or 'N/A' }}
+                </div>
+                <div class="mb-2">
+                    <span class="fw-bold">Days:</span> {{ user.available_days or 'N/A' }}
+                </div>
+                <div class="mb-2">
+                    <span class="fw-bold">Time:</span> {{ user.available_time or 'N/A' }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- Quick Actions / Schedule -->
+    <div class="col-md-8 mb-3">
+        <div class="row h-100">
+            {% if user.role == 'doctor' %}
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 feature-card">
+                    <div class="card-header bg-success text-white text-center">
+                        <i class="fas fa-calendar-check fa-lg"></i>
+                        <h6 class="mb-0">My Appointments</h6>
+                    </div>
+                    <div class="card-body text-start">
+                        <a href="{{ url_for('appointments') }}" class="btn btn-info w-100 mb-2">
+                            <i class="fas fa-list me-1"></i>View Appointments
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 feature-card">
+                    <div class="card-header bg-primary text-white text-center">
+                        <i class="fas fa-clock fa-lg"></i>
+                        <h6 class="mb-0">My Schedule</h6>
+                    </div>
+                    <div class="card-body text-start">
+                        <p class="mb-1"><strong>Days:</strong> {{ user.available_days or 'N/A' }}</p>
+                        <p class="mb-1"><strong>Time:</strong> {{ user.available_time or 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 feature-card">
+                    <div class="card-header bg-success text-white text-center">
+                        <i class="fas fa-calendar-plus fa-lg"></i>
+                        <h6 class="mb-0">Book Appointment</h6>
+                    </div>
+                    <div class="card-body text-start">
+                        <a href="{{ url_for('book_appointment') }}" class="btn btn-primary w-100 mb-2">
+                            <i class="fas fa-calendar-plus me-1"></i>Book Appointment
+                        </a>
+                        <a href="{{ url_for('appointments') }}" class="btn btn-info w-100">
+                            <i class="fas fa-list me-1"></i>View Appointments
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 feature-card">
+                    <div class="card-header bg-primary text-white text-center">
+                        <i class="fas fa-file-upload fa-lg"></i>
+                        <h6 class="mb-0">Upload File</h6>
+                    </div>
+                    <div class="card-body text-start">
+                        <a href="{{ url_for('upload_file') }}" class="btn btn-primary w-100 mb-2">
+                            <i class="fas fa-file-upload me-1"></i>Upload File
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Files Section -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="fas fa-files me-2"></i>Files</h5>
+            </div>
+            <div class="card-body">
+                {% if files %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Filename</th>
+                                    <th>Sender</th>
+                                    <th>Recipient</th>
+                                    <th>Size</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for file in files %}
+                                <tr>
+                                    <td>{{ file.filename }}</td>
+                                    <td>{{ file.sender.name }}</td>
+                                    <td>{{ file.recipient.name }}</td>
+                                    <td>{{ "%.2f"|format(file.file_size / 1024) }} KB</td>
+                                    <td>{{ file.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        <a href="{{ url_for('download_file', file_id=file.id) }}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-download me-1"></i>Download
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No files shared yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

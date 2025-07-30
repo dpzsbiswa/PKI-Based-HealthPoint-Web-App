@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Payment - HealthPoint{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-credit-card me-2"></i>
+                        Complete Your Booking - Payment Required
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Appointment Details</h5>
+                            <p><strong>Doctor:</strong> {{ appointment.doctor.name }}</p>
+                            <p><strong>Date:</strong> {{ appointment.date.strftime('%B %d, %Y') }}</p>
+                            <p><strong>Time:</strong> {{ appointment.time.strftime('%I:%M %p') }}</p>
+                            <p><strong>Consultation Fee:</strong> NPR {{ "%.2f"|format(appointment.doctor.consultation_fee or 0) }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Payment Summary</h5>
+                            <p><strong>Base Amount:</strong> NPR {{ "%.2f"|format(amount) }}</p>
+                            <p><strong>Tax Amount:</strong> NPR {{ "%.2f"|format(tax_amount) }}</p>
+                            <p><strong>Total Amount:</strong> NPR {{ "%.2f"|format(total_amount) }}</p>
+                        </div>
+                    </div>
+                    
+                    <form action="{{ esewa_url }}" method="POST" id="esewa-form">
+                        <input type="hidden" name="amount" value="{{ form_data.amount }}">
+                        <input type="hidden" name="tax_amount" value="{{ form_data.tax_amount }}">
+                        <input type="hidden" name="total_amount" value="{{ form_data.total_amount }}">
+                        <input type="hidden" name="transaction_uuid" value="{{ form_data.transaction_uuid }}">
+                        <input type="hidden" name="product_code" value="{{ form_data.product_code }}">
+                        <input type="hidden" name="product_service_charge" value="{{ form_data.product_service_charge }}">
+                        <input type="hidden" name="product_delivery_charge" value="{{ form_data.product_delivery_charge }}">
+                        <input type="hidden" name="success_url" value="{{ form_data.success_url }}">
+                        <input type="hidden" name="failure_url" value="{{ form_data.failure_url }}">
+                        <input type="hidden" name="signed_field_names" value="{{ form_data.signed_field_names }}">
+                        <input type="hidden" name="signature" value="{{ form_data.signature }}">
+                        
+                        <div class="text-center">
+                                                <button type="submit" class="btn btn-success btn-lg pay-with-esewa-btn">
+                        <i class="fa-solid fa-credit-card me-2"></i>
+                        Pay with eSewa
+                    </button>
+                        </div>
+                    </form>
+                    
+                                        <div class="mt-4">
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle me-2"></i>Complete Your Booking</h6>
+                            <ul class="mb-0">
+                                <li>Your appointment is reserved but requires payment to be confirmed</li>
+                                <li>You will be redirected to eSewa's secure payment gateway</li>
+                                <li>For testing, use eSewa ID: 9806800001/2/3/4/5 with password: Nepal@123</li>
+                                <li>Use token: 123456 for verification</li>
+                                <li>Your payment is secured with HMAC SHA-256 encryption</li>
+                                <li>Appointment will be confirmed immediately after successful payment</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- eSewa Payment Partner Badge -->
+                        <div class="text-center mt-3">
+                            <div class="payment-partner-badge">
+                                <span class="badge bg-success fs-6">
+                                    <i class="fa-solid fa-shield-halved me-2"></i>
+                                    Secured by eSewa
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

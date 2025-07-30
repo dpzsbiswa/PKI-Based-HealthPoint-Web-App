@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Welcome to HealthPoint{% endblock %}
+{% block content %}
+<div class="container pt-4 pb-5 d-flex flex-column align-items-center justify-content-center" style="min-height: 70vh;">
+    <h1 class="mb-4 fw-bold text-center" style="color: #222; letter-spacing: 1px; font-family: 'Inter', serif; font-size: 2.7rem;">Welcome to HealthPoint</h1>
+    <p class="lead mb-5 text-muted text-center mx-auto" style="max-width: 600px;">Connect with certified doctors and counselors online for quick check-ups, trusted advice, and mental wellness support — all from the comfort of your home.</p>
+    <div class="d-flex flex-wrap justify-content-center mb-5 gap-3 w-100">
+        <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg px-4">Login</a>
+        <a href="{{ url_for('register') }}" class="btn btn-outline-info btn-lg px-4">Register</a>
+    </div>
+    <div class="row gx-4 gy-4 w-100 justify-content-center" style="max-width: 1200px; margin: 0 auto;">
+        <div class="col-lg-4 col-md-6 col-12 d-flex align-items-stretch">
+            <div class="feature-card flex-fill bg-white text-center p-4 h-100 rounded-4 w-100 shadow-sm" style="min-height: 260px;">
+                <i class="fas fa-user-md fa-2x mb-3 text-medical-blue"></i>
+                <h5 class="fw-semibold mb-2">For Doctors</h5>
+                <p class="text-muted mb-0">Manage your schedule, appointments, and securely share files with patients.</p>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-12 d-flex align-items-stretch">
+            <div class="feature-card flex-fill bg-white text-center p-4 h-100 rounded-4 w-100 shadow-sm" style="min-height: 260px;">
+                <i class="fas fa-user-injured fa-2x mb-3 text-medical-green"></i>
+                <h5 class="fw-semibold mb-2">For Patients</h5>
+                <p class="text-muted mb-0">Book appointments, upload medical files, and communicate securely with your doctor.</p>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-12 col-12 d-flex align-items-stretch">
+            <div class="feature-card flex-fill bg-white text-center p-4 h-100 rounded-4 w-100 shadow-sm" style="min-height: 260px;">
+                <i class="fas fa-lock fa-2x mb-3 text-primary"></i>
+                <h5 class="fw-semibold mb-2">End-to-End Security</h5>
+                <p class="text-muted mb-0">Your health data is encrypted and protected at every step.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

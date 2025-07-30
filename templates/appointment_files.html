@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Appointment Files - SecureHealth{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-file-medical me-2"></i>
+                    Files for Appointment: {{ appointment.date.strftime('%Y-%m-%d') }} at {{ appointment.time.strftime('%H:%M') }}
+                </h5>
+                <div>
+                    {% if user.role == 'doctor' and appointment.doctor_id == user.id %}
+                        <a href="{{ url_for('upload_appointment_file', appt_id=appointment.id) }}" class="btn btn-success btn-sm">
+                            <i class="fas fa-upload me-1"></i>Share File
+                        </a>
+                    {% endif %}
+                    <a href="{{ url_for('appointments') }}" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Appointments
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Appointment Details -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Appointment Details</h6>
+                        <p><strong>Date:</strong> {{ appointment.date.strftime('%Y-%m-%d') }}</p>
+                        <p><strong>Time:</strong> {{ appointment.time.strftime('%H:%M') }}</p>
+                        <p><strong>Status:</strong> 
+                            <span class="badge {% if appointment.status == 'approved' %}bg-success{% elif appointment.status == 'pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                                {{ appointment.status.title() }}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Participants</h6>
+                        <p><strong>Doctor:</strong> {{ appointment.doctor.name }}</p>
+                        <p><strong>Patient:</strong> {{ appointment.patient.name }}</p>
+                        {% if appointment.notes %}
+                            <p><strong>Notes:</strong> {{ appointment.notes }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Files Section -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <h6 class="text-muted mb-3">
+                            <i class="fas fa-files me-1"></i>
+                            Shared Files ({{ files|length }})
+                        </h6>
+                        
+                        {% if files %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>File Name</th>
+                                            <th>Type</th>
+                                            <th>Description</th>
+                                            <th>Size</th>
+                                            <th>Shared By</th>
+                                            <th>Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for file in files %}
+                                        <tr>
+                                            <td>
+                                                <i class="fas fa-file me-2"></i>
+                                                {{ file.filename }}
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">{{ file.file_type.replace('_', ' ').title() }}</span>
+                                            </td>
+                                            <td>
+                                                {% if file.description %}
+                                                    {{ file.description }}
+                                                {% else %}
+                                                    <span class="text-muted">No description</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ "%.2f"|format(file.file_size / 1024) }} KB</td>
+                                            <td>
+                                                <span class="text-primary">{{ file.doctor.name }}</span>
+                                            </td>
+                                            <td>{{ file.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a href="{{ url_for('download_appointment_file', file_id=file.id) }}" 
+                                                       class="btn btn-sm btn-primary" 
+                                                       title="Download File">
+                                                        <i class="fas fa-download"></i>
+                                                    </a>
+                                                    {% if user.role == 'doctor' and file.doctor_id == user.id %}
+                                                        <form action="{{ url_for('delete_appointment_file', file_id=file.id) }}" 
+                                                              method="POST" 
+                                                              style="display:inline-block"
+                                                              onsubmit="return confirm('Are you sure you want to delete this file?')">
+                                                            <button type="submit" 
+                                                                    class="btn btn-sm btn-danger" 
+                                                                    title="Delete File">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-file-medical fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No files have been shared for this appointment yet.</p>
+                                {% if user.role == 'doctor' and appointment.doctor_id == user.id %}
+                                    <a href="{{ url_for('upload_appointment_file', appt_id=appointment.id) }}" class="btn btn-primary">
+                                        <i class="fas fa-upload me-1"></i>Share First File
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

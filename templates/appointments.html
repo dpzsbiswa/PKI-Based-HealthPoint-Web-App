@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Appointments - SecureHealth{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-calendar-check me-2"></i>Appointments</h5>
+            </div>
+            <div class="card-body">
+                {% if appointments %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Doctor</th>
+                                <th>Patient</th>
+                                <th>Status</th>
+                                <th>Payment</th>
+                                <th>Notes</th>
+                                <th>Remarks</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for appt in appointments %}
+                            <tr>
+                                <td>{{ appt.date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ appt.time.strftime('%H:%M') }}</td>
+                                <td>{{ appt.doctor.name }}</td>
+                                <td>{{ appt.patient.name }}</td>
+                                <td>{{ appt.status.title() }}</td>
+                                <td>
+                                    {% if appt.payments %}
+                                        {% set payment = appt.payments[0] %}
+                                        {% if payment.status == 'completed' %}
+                                            <span class="badge bg-success">Paid</span>
+                                        {% elif payment.status == 'pending' %}
+                                            <span class="badge bg-warning">Pending</span>
+                                        {% elif payment.status == 'failed' %}
+                                            <span class="badge bg-danger">Failed</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ payment.status.title() }}</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="badge bg-secondary">No Payment</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ appt.notes or '' }}</td>
+                                <td>
+                                    {% if appt.status in ['cancelled', 'rejected'] and appt.cancellation_remarks %}
+                                        <span class="text-danger">{{ appt.cancellation_remarks }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group-vertical" role="group">
+                                        <!-- View Files Button -->
+                                        <a href="{{ url_for('appointment_files', appt_id=appt.id) }}" class="btn btn-info btn-sm mb-1">
+                                            <i class="fas fa-file-medical me-1"></i>View Files
+                                        </a>
+                                        
+                                        <!-- Doctor Actions -->
+                                        {% if user.role == 'doctor' and appt.status == 'pending' %}
+                                            <form action="{{ url_for('approve_appointment', appt_id=appt.id) }}" method="POST" style="display:inline-block">
+                                                <button type="submit" class="btn btn-success btn-sm mb-1">Approve</button>
+                                            </form>
+                                            <form action="{{ url_for('reject_appointment', appt_id=appt.id) }}" method="POST" style="display:inline-block">
+                                                <textarea name="remarks" class="form-control mb-1" placeholder="Remarks (required)" required></textarea>
+                                                <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                            </form>
+                                        {% endif %}
+                                        
+                                        <!-- Cancel Actions -->
+                                        {% if (user.role == 'patient' and appt.status in ['pending', 'approved']) or (user.role == 'doctor' and appt.status == 'approved') %}
+                                            <form action="{{ url_for('cancel_appointment', appt_id=appt.id) }}" method="POST" style="display:inline-block">
+                                                <textarea name="remarks" class="form-control mb-1" placeholder="Remarks (required)" required></textarea>
+                                                <button type="submit" class="btn btn-warning btn-sm">Cancel</button>
+                                            </form>
+                                        {% endif %}
+                                        
+                                        <!-- Payment Actions -->
+                                        {% if user.role == 'patient' and appt.status == 'pending' and not appt.payments %}
+                                            <span class="badge bg-warning mb-1">Payment Required</span>
+                                            <a href="{{ url_for('initiate_payment', appointment_id=appt.id) }}" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-credit-card me-1"></i>Complete Payment
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                    <p class="text-muted">No appointments found.</p>
+                {% endif %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

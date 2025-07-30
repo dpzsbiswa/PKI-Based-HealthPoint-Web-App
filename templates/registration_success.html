@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Registration Successful - SecureHealth{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card mt-5">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="fas fa-check-circle me-2"></i>Registration Successful!</h4>
+            </div>
+            <div class="card-body text-center">
+                <p class="lead">Welcome, {{ user_name }}! Your account has been created.</p>
+                <p class="mb-3">Your private key will be downloaded automatically. <br> <strong>Keep it safe!</strong> You will need it to log in.</p>
+                <a id="download-link" href="{{ url_for('download_private_key', user_id=user_id) }}" class="btn btn-success mb-3">Download Private Key</a>
+                <div class="alert alert-info mt-3">You will be redirected to the login page in a few seconds...</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+window.onload = function() {
+    // Trigger download
+    document.getElementById('download-link').click();
+    // Redirect to login after 5 seconds
+    setTimeout(function() {
+        window.location.href = "{{ url_for('login') }}";
+    }, 5000);
+};
+</script>
+{% endblock %} 

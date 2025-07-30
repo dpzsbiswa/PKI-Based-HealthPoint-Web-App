@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Successful - HealthPoint{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Booking Confirmed & Payment Successful!
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Payment Details</h5>
+                            <p><strong>Transaction Code:</strong> {{ payment.esewa_transaction_code }}</p>
+                            <p><strong>Reference ID:</strong> {{ payment.esewa_ref_id }}</p>
+                            <p><strong>Amount:</strong> NPR {{ "%.2f"|format(payment.total_amount) }}</p>
+                            <p><strong>Status:</strong> <span class="badge bg-success">{{ payment.status }}</span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Appointment Details</h5>
+                            <p><strong>Doctor:</strong> {{ payment.appointment.doctor.name }}</p>
+                            <p><strong>Date:</strong> {{ payment.appointment.date.strftime('%B %d, %Y') }}</p>
+                            <p><strong>Time:</strong> {{ payment.appointment.time.strftime('%I:%M %p') }}</p>
+                            <p><strong>Status:</strong> <span class="badge bg-primary">{{ payment.appointment.status }}</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-success mt-4">
+                        <h6><i class="fas fa-info-circle me-2"></i>Booking Confirmed!</h6>
+                        <ul class="mb-0">
+                            <li>✅ Your appointment has been booked and confirmed</li>
+                            <li>✅ Payment has been processed successfully</li>
+                            <li>✅ You will receive a confirmation email shortly</li>
+                            <li>📅 Please arrive 10 minutes before your scheduled time</li>
+                            <li>📋 Bring any relevant medical documents</li>
+                            <li>📞 Contact the doctor if you need to reschedule</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('appointments') }}" class="btn btn-primary me-2">
+                            <i class="fas fa-calendar me-2"></i>
+                            View Appointments
+                        </a>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                            <i class="fas fa-home me-2"></i>
+                            Go to Dashboard
+                        </a>
+                    </div>
+                    
+                    <!-- eSewa Payment Partner Badge -->
+                    <div class="text-center mt-4">
+                        <div class="payment-partner-badge">
+                            <span class="badge bg-success fs-6">
+                                <i class="fa-solid fa-check-circle me-2"></i>
+                                Payment Processed by eSewa
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

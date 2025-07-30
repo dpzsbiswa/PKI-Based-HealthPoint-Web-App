@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Failed - HealthPoint{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-times-circle me-2"></i>
+                        Booking Incomplete - Payment Failed
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-times-circle text-danger" style="font-size: 4rem;"></i>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Payment Details</h5>
+                            <p><strong>Transaction UUID:</strong> {{ payment.transaction_uuid if payment else 'N/A' }}</p>
+                            <p><strong>Amount:</strong> NPR {{ "%.2f"|format(payment.total_amount) if payment else 'N/A' }}</p>
+                            <p><strong>Status:</strong> <span class="badge bg-danger">{{ payment.status if payment else 'Failed' }}</span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Appointment Details</h5>
+                            {% if appointment %}
+                            <p><strong>Doctor:</strong> {{ appointment.doctor.name }}</p>
+                            <p><strong>Date:</strong> {{ appointment.date.strftime('%B %d, %Y') }}</p>
+                            <p><strong>Time:</strong> {{ appointment.time.strftime('%I:%M %p') }}</p>
+                            <p><strong>Status:</strong> <span class="badge bg-warning">{{ appointment.status }}</span></p>
+                            {% else %}
+                            <p><strong>Appointment:</strong> Not found</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning mt-4">
+                        <h6><i class="fas fa-exclamation-triangle me-2"></i>What Happened?</h6>
+                        <ul class="mb-0">
+                            <li>❌ The payment was not completed successfully</li>
+                            <li>⏳ Your appointment is reserved but not confirmed</li>
+                            <li>💳 You can try the payment again to complete your booking</li>
+                            <li>📞 If the problem persists, please contact support</li>
+                            <li>⚠️ Your appointment slot will be held for a limited time</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        {% if appointment %}
+                        <a href="{{ url_for('initiate_payment', appointment_id=appointment.id) }}" class="btn btn-primary me-2">
+                            <i class="fas fa-credit-card me-2"></i>
+                            Try Payment Again
+                        </a>
+                        {% endif %}
+                        <a href="{{ url_for('appointments') }}" class="btn btn-secondary me-2">
+                            <i class="fas fa-calendar me-2"></i>
+                            View Appointments
+                        </a>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-home me-2"></i>
+                            Go to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}Book Appointment - SecureHealth{% endblock %}
+{% block content %}
+<h2 class="mb-4 text-center fw-bold"><i class="fas fa-user-md me-2"></i>Available Doctors</h2>
+<div class="row justify-content-center">
+    {% for doctor in doctors %}
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card h-100 text-center">
+            <div class="card-header bg-info text-white">
+                <i class="fas fa-user-md fa-2x mb-2"></i>
+                <h5 class="mb-0">Dr. {{ doctor.name }}</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Specialization:</strong> {{ doctor.specialization or 'N/A' }}</p>
+                <p><strong>Experience:</strong> {{ doctor.years_experience or 'N/A' }} years</p>
+                <p><strong>Consultation Fee:</strong> 
+                    {% if doctor.consultation_fee %}
+                        <span class="text-primary fw-bold">NPR {{ "%.2f"|format(doctor.consultation_fee) }}</span>
+                        <small class="text-muted">(+ 13% VAT)</small>
+                    {% else %}
+                        <span class="text-muted">Not set</span>
+                    {% endif %}
+                </p>
+                <p><strong>Available Days:</strong> {{ doctor.available_days or 'N/A' }}</p>
+                <p><strong>Available Time:</strong> {{ doctor.available_time or 'N/A' }}</p>
+                <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#bookModal" onclick="openBookingModal({{ doctor.id }}, '{{ doctor.name }}', '{{ doctor.available_days }}', '{{ doctor.available_time }}')">
+                    <i class="fas fa-calendar-plus me-1"></i>Book Appointment
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Booking Modal -->
+<div class="modal fade" id="bookModal" tabindex="-1" aria-labelledby="bookModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" id="bookingForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bookModalLabel">Book Appointment</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" name="doctor_id" id="modal_doctor_id">
+          <div class="mb-3">
+            <label for="modal_doctor_name" class="form-label">Doctor</label>
+            <input type="text" class="form-control" id="modal_doctor_name" readonly>
+          </div>
+          <div class="mb-3">
+            <label for="modal_date" class="form-label">Date</label>
+            <select class="form-select" id="modal_date" name="date" required>
+              <option value="">Select date</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="modal_time" class="form-label">Time</label>
+            <select class="form-select" id="modal_time" name="time" required>
+              <option value="">Select time</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="modal_notes" class="form-label">Notes (optional)</label>
+            <textarea class="form-control" id="modal_notes" name="notes" rows="2"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">
+            <i class="fas fa-credit-card me-2"></i>Book & Pay Now
+          </button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentDoctorId = null;
+let currentAvailableTimes = null;
+function openBookingModal(doctorId, doctorName, availableDays, availableTimes) {
+    document.getElementById('modal_doctor_id').value = doctorId;
+    document.getElementById('modal_doctor_name').value = doctorName;
+    currentDoctorId = doctorId;
+    currentAvailableTimes = availableTimes;
+    // Populate available dates
+    let dateSelect = document.getElementById('modal_date');
+    dateSelect.innerHTML = '<option value="">Select date</option>';
+    if (availableDays) {
+        let daysArr = availableDays.split(',');
+        let today = new Date();
+        for (let i = 0; i < 14; i++) {
+            let d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+            let dayShort = d.toLocaleDateString('en-US', { weekday: 'short' });
+            if (daysArr.includes(dayShort)) {
+                let val = d.toISOString().slice(0,10);
+                let label = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                dateSelect.innerHTML += `<option value="${val}">${label}</option>`;
+            }
+        }
+    }
+    // Reset time select
+    let timeSelect = document.getElementById('modal_time');
+    timeSelect.innerHTML = '<option value="">Select time</option>';
+}
+document.getElementById('modal_date').addEventListener('change', function() {
+    let date = this.value;
+    let timeSelect = document.getElementById('modal_time');
+    timeSelect.innerHTML = '<option value="">Loading...</option>';
+    fetch(`/api/booked_slots?doctor_id=${currentDoctorId}&date=${date}`)
+        .then(resp => resp.json())
+        .then(data => {
+            let timesArr = currentAvailableTimes ? currentAvailableTimes.split(',') : [];
+            let booked = data.booked || [];
+            let hasAvailable = false;
+            let uniqueTimes = [...new Set(timesArr)];
+            timeSelect.innerHTML = '';
+            uniqueTimes.forEach(function(slot) {
+                // slot is like '18:30-19:00', value should be '18:30'
+                let startTime = slot.split('-')[0];
+                if (!booked.includes(startTime)) {
+                    timeSelect.innerHTML += `<option value="${startTime}">${slot}</option>`;
+                    hasAvailable = true;
+                }
+            });
+            if (!hasAvailable) {
+                timeSelect.innerHTML = '<option value="">No slots available</option>';
+            }
+        });
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Register - SecureHealth{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="fas fa-user-plus me-2"></i>Register</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="gender" class="form-label">Gender</label>
+                        <select class="form-select" id="gender" name="gender" required>
+                            <option value="">Select gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="age" class="form-label">Age</label>
+                        <input type="number" class="form-control" id="age" name="age" min="0" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contact_number" class="form-label">Contact Number</label>
+                        <input type="text" class="form-control" id="contact_number" name="contact_number" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Role</label>
+                        <select class="form-select" id="role" name="role" required onchange="toggleDoctorFields()">
+                            <option value="">Select your role</option>
+                            <option value="doctor">Doctor</option>
+                            <option value="patient">Patient</option>
+                        </select>
+                    </div>
+                    <div id="doctor-fields" style="display:none;">
+                        <div class="mb-3">
+                            <label for="specialization" class="form-label">Specialization</label>
+                            <input type="text" class="form-control" id="specialization" name="specialization">
+                        </div>
+                        <div class="mb-3">
+                            <label for="nmc_registration_number" class="form-label">NMC Registration Number</label>
+                            <input type="text" class="form-control" id="nmc_registration_number" name="nmc_registration_number">
+                        </div>
+                        <div class="mb-3">
+                            <label for="years_experience" class="form-label">Years of Experience</label>
+                            <input type="number" class="form-control" id="years_experience" name="years_experience" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label for="consultation_fee" class="form-label">Consultation Fee</label>
+                            <input type="number" class="form-control" id="consultation_fee" name="consultation_fee" min="0" step="0.01">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Available Days</label>
+                            <div id="available_days_group">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="day_mon" value="Mon">
+                                    <label class="form-check-label" for="day_mon">Mon</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="day_tue" value="Tue">
+                                    <label class="form-check-label" for="day_tue">Tue</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="day_wed" value="Wed">
+                                    <label class="form-check-label" for="day_wed">Wed</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="day_thu" value="Thu">
+                                    <label class="form-check-label" for="day_thu">Thu</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="day_fri" value="Fri">
+                                    <label class="form-check-label" for="day_fri">Fri</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="day_sat" value="Sat">
+                                    <label class="form-check-label" for="day_sat">Sat</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="day_sun" value="Sun">
+                                    <label class="form-check-label" for="day_sun">Sun</label>
+                                </div>
+                            </div>
+                            <input type="hidden" id="available_days" name="available_days">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Available Time</label>
+                            <div id="available_time_group">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="slot_1800" value="18:00-18:30">
+                                    <label class="form-check-label" for="slot_1800">6:00 PM - 6:30 PM</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="slot_1830" value="18:30-19:00">
+                                    <label class="form-check-label" for="slot_1830">6:30 PM - 7:00 PM</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="slot_1900" value="19:00-19:30">
+                                    <label class="form-check-label" for="slot_1900">7:00 PM - 7:30 PM</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="slot_1930" value="19:30-20:00">
+                                    <label class="form-check-label" for="slot_1930">7:30 PM - 8:00 PM</label>
+                                </div>
+                            </div>
+                            <input type="hidden" id="available_time" name="available_time">
+                        </div>
+                    </div>
+                    <script>
+                    function toggleDoctorFields() {
+                        var role = document.getElementById('role').value;
+                        var doctorFields = document.getElementById('doctor-fields');
+                        doctorFields.style.display = (role === 'doctor') ? 'block' : 'none';
+                    }
+                    // Collect checked days and time slots before form submit
+                    document.querySelector('form').addEventListener('submit', function(e) {
+                        var days = Array.from(document.querySelectorAll('#available_days_group input[type=checkbox]:checked')).map(cb => cb.value);
+                        document.getElementById('available_days').value = days.join(',');
+                        var times = Array.from(document.querySelectorAll('#available_time_group input[type=checkbox]:checked')).map(cb => cb.value);
+                        document.getElementById('available_time').value = times.join(',');
+                    });
+                    // Show flash messages as popups
+                    window.onload = function() {
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                alert("{{ message }}");
+                            {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+                    };
+                    </script>
+                    <button type="submit" class="btn btn-success w-100">Register</button>
+                </form>
+                
+                <hr>
+                <div class="text-center">
+                    <p class="mb-0">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

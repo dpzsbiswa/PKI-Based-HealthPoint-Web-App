@@ -1,0 +1,262 @@
+/* HealthPoint Modern Healthcare Theme */
+body {
+  background-color: #f4f8fb;
+  font-family: 'Inter', Arial, sans-serif;
+}
+
+.navbar-health {
+  background: linear-gradient(90deg, #0cbaba 0%, #380036 100%);
+}
+
+.navbar-brand {
+  font-weight: bold;
+  font-size: 1.7rem;
+  letter-spacing: 1px;
+}
+
+.hero-section {
+  padding: 3rem 0;
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+}
+
+.feature-card {
+  padding: 2rem;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.card {
+  border: none;
+  border-radius: 18px;
+  box-shadow: 0 2px 16px rgba(44, 90, 160, 0.07);
+  margin-bottom: 2rem;
+}
+
+.card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  border-radius: 18px 18px 0 0 !important;
+  font-weight: 600;
+  background: linear-gradient(90deg, #0cbaba 0%, #380036 100%);
+  color: #fff;
+}
+
+.btn {
+  border-radius: 25px;
+  font-weight: 500;
+  padding: 0.5rem 1.5rem;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(12, 186, 186, 0.08);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  background: #0cbaba;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: #099e9e;
+}
+
+.btn-info {
+  background: #380036;
+  border: none;
+  color: #fff;
+}
+
+.btn-info:hover {
+  background: #2a002a;
+  color: #fff;
+}
+
+.btn-success {
+  background: #2ecc71;
+  border: none;
+}
+
+.btn-success:hover {
+  background: #27ae60;
+}
+
+.btn-warning {
+  background: #f1c40f;
+  border: none;
+  color: #fff;
+}
+
+.btn-warning:hover {
+  background: #d4ac0d;
+  color: #fff;
+}
+
+.btn-danger {
+  background: #e74c3c;
+  border: none;
+}
+
+.btn-danger:hover {
+  background: #c0392b;
+}
+
+.chat-messages {
+  border-radius: 10px;
+}
+
+.message-bubble {
+  word-wrap: break-word;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.table {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.table th {
+  background-color: #eaf6fa;
+  border-top: none;
+  font-weight: 600;
+}
+
+.alert {
+  border-radius: 12px;
+  border: none;
+}
+
+.form-control, .form-select {
+  border-radius: 12px;
+  border: 2px solid #eaf6fa;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #0cbaba;
+  box-shadow: 0 0 0 0.15rem rgba(12, 186, 186, 0.15);
+}
+
+.modal-content {
+  border-radius: 15px;
+  border: none;
+}
+
+.modal-header {
+  border-radius: 15px 15px 0 0;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 2rem 1rem;
+  }
+
+  .feature-card {
+    padding: 1.5rem;
+  }
+
+  .message-bubble {
+    max-width: 85% !important;
+  }
+  .navbar-brand {
+    font-size: 1.2rem;
+  }
+  .card {
+    margin-bottom: 1.2rem;
+  }
+}
+
+/* Loading animation */
+.loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Security indicators */
+.security-badge {
+  background: linear-gradient(45deg, #28a745, #20c997);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.encryption-indicator {
+  color: #28a745;
+  font-size: 0.9rem;
+}
+
+/* File upload area */
+.upload-area {
+  border: 2px dashed #007bff;
+  border-radius: 10px;
+  padding: 2rem;
+  text-align: center;
+  background-color: #f8f9fa;
+  transition: all 0.3s ease;
+}
+
+.upload-area:hover {
+  background-color: #e9ecef;
+  border-color: #0056b3;
+}
+
+/* Status indicators */
+.status-online {
+  color: #28a745;
+}
+
+.status-offline {
+  color: #6c757d;
+}
+
+/* Professional healthcare colors */
+.bg-medical-blue {
+  background-color: #2c5aa0 !important;
+}
+
+.bg-medical-green {
+  background-color: #4a90a4 !important;
+}
+
+.text-medical-blue {
+  color: #2c5aa0 !important;
+}
+
+.text-medical-green {
+  color: #4a90a4 !important;
+}
+
+.footer-health {
+  background: #eaf6fa;
+  color: #3a3a3a;
+  border-top: 1px solid #d1e7ef;
+}
