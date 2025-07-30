@@ -78,21 +78,6 @@ A comprehensive, production-ready web application for secure file sharing, appoi
    # Run appointment files migration
    python migrate_add_appointment_files.py
    ```
-
-## 👥 Demo Accounts
-
-The application comes with pre-configured demo accounts:
-
-### Doctor Account
-- **Email**: doctor@example.com
-- **Password**: doctor123
-- **Features**: Can view patient files, manage appointments, set consultation fees, share appointment files
-
-### Patient Account
-- **Email**: patient@example.com
-- **Password**: patient123
-- **Features**: Can upload files to doctors, book appointments, make payments, view appointment files
-
 ## 📋 Manual Installation
 
 If you prefer to run without Docker:
